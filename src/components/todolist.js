@@ -14,6 +14,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs';
 
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 
 export default function Todolist() {
@@ -65,63 +70,116 @@ export default function Todolist() {
         setTodo({ ...todo, date: dayjs(date).startOf('day').toDate() });
     };
 
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && (
+                    <Box sx={{ p: 3 }}>
+                        <Typography>{children}</Typography>
+                    </Box>
+                )}
+            </div>
+        );
+    }
+
+    TabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.number.isRequired,
+        value: PropTypes.number.isRequired,
+    };
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        };
+    }
+
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
     return (
         <div>
-            <form title="Add todo">
-                <Stack direction='row'
-                    spacing={2}
-                    alignItems='center'
-                    justifyContent='center'
-                >
-                    <TextField
-                        label='Description'
-                        variant='standard'
-                        value={todo.description}
-                        onChange={e => setTodo({ ...todo, description: e.target.value })}
-                    />
+            <Box sx={{ width: '100%' }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                        <Tab label="HOME" {...a11yProps(0)} />
+                        <Tab label="TODOS" {...a11yProps(1)} />
+                    </Tabs>
+                </Box>
+                <TabPanel value={value} index={0}>
+                    <h1>Welcome to MY TODO MUI</h1>
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    <form title="Add todo">
+                        <Stack direction='row'
+                            spacing={2}
+                            alignItems='center'
+                            justifyContent='center'
+                        >
+                            <TextField
+                                label='Description'
+                                variant='standard'
+                                value={todo.description}
+                                onChange={e => setTodo({ ...todo, description: e.target.value })}
+                            />
 
-                    <TextField
-                        label='Important'
-                        variant='standard'
-                        value={todo.priority}
-                        onChange={e => setTodo({ ...todo, priority: e.target.value })}
-                    />
+                            <TextField
+                                label='Important'
+                                variant='standard'
+                                value={todo.priority}
+                                onChange={e => setTodo({ ...todo, priority: e.target.value })}
+                            />
 
-                    <TextField
-                        label='Date'
-                        value={todo.date}
-                        variant='standard'
-                        onChange={e => setTodo({ ...todo, date: e.target.value })}
-                    />
-                    <LocalizationProvider
-                        dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            onChange={handleDateChange}
-                        />
-                    </LocalizationProvider>
-                    <Button onClick={handleAddTodo}
-                        variant="contained"
+                            <TextField
+                                label='Date'
+                                value={todo.date}
+                                variant='standard'
+                                onChange={e => setTodo({ ...todo, date: e.target.value })}
+                            />
+                            <LocalizationProvider
+                                dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    onChange={handleDateChange}
+                                />
+                            </LocalizationProvider>
+                            <Button onClick={handleAddTodo}
+                                variant="contained"
 
-                    >Add
-                    </Button>
-                    <Button onClick={handleDeleteTodo}
-                        variant='outlined'
-                        color="error"
-                    >Delete selected</Button>
-                </Stack>
-            </form>
+                            >Add
+                            </Button>
+                            <Button onClick={handleDeleteTodo}
+                                variant='outlined'
+                                color="error"
+                            >Delete selected</Button>
+                        </Stack>
+                    </form>
 
-            <div className="ag-theme-material" style={{ height: 400, width: 600, margin: 'auto' }}>
-                <AgGridReact
-                    ref={gridRef}
-                    onGridReady={params => gridRef.current = params.api}
-                    rowSelection="single"
-                    rowData={todos}
-                    columnDefs={columnDefs}
-                    animateRows={true}
-                >
-                </AgGridReact>
-            </div>
+                    <div className="ag-theme-material" style={{ height: 400, width: 600, margin: 'auto' }}>
+                        <AgGridReact
+                            ref={gridRef}
+                            onGridReady={params => gridRef.current = params.api}
+                            rowSelection="single"
+                            rowData={todos}
+                            columnDefs={columnDefs}
+                            animateRows={true}
+                        >
+                        </AgGridReact>
+                    </div>
+
+                </TabPanel>
+            </Box>
 
 
 
